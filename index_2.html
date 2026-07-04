@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BGS Cost Sheet Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f1f5f9;font-size:14px;color:#1e293b}
+a{text-decoration:none}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+
+/* NAV */
+.nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 16px;display:flex;align-items:center;gap:8px;height:50px;position:sticky;top:0;z-index:99;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.nav-logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13px;color:#0f172a;margin-right:8px;white-space:nowrap}
+.nav-icon{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#1453B8,#0E3E8C);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900}
+.nav-btn{padding:5px 12px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#64748b}
+.nav-btn:hover{background:#f1f5f9;color:#1e293b}
+.nav-btn.on{background:linear-gradient(135deg,#1453B8,#0E3E8C);color:#fff}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.av{width:26px;height:26px;border-radius:50%;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+/* MAIN */
+.page{padding:18px;max-width:1800px;margin:0 auto;display:none}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:14px}
+.card-body{padding:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #f1f5f9}
+.card-title{font-size:13px;font-weight:700;color:#0f172a}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.ph-title{font-size:17px;font-weight:800;color:#0f172a}
+.ph-sub{font-size:11px;color:#94a3b8;margin-top:1px}
+
+/* KPI ROW */
+.krow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:12px}
+.kpi-l{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.kpi-v{font-size:18px;font-weight:900;color:#0f172a;line-height:1.1}
+.kpi-s{margin-top:4px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;display:inline-block}
+.kg{background:#dcfce7;color:#16a34a}.ka{background:#fef3c7;color:#d97706}.kb{background:#dbeafe;color:#1d4ed8}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 13px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;transition:all .15s;line-height:1}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn-p{background:linear-gradient(135deg,#1453B8,#0E3E8C);color:#fff}
+.btn-s{background:#fff;color:#374151;border:1.5px solid #e2e8f0}
+.btn-s:hover{background:#f8fafc}
+.btn-g{background:transparent;color:#64748b;padding:4px 8px}
+.btn-g:hover{background:#f1f5f9}
+.btn-d{background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;font-weight:700}
+.btn-ok{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;font-weight:700}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:400px}
+thead{background:#f8fafc}
+th{padding:7px 9px;text-align:left;font-size:9px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+td{padding:8px 9px;border-top:1px solid #f1f5f9;font-size:12px;vertical-align:middle}
+tr:hover td{background:#fafbff}
+.row-cl{cursor:pointer}
+
+/* TAGS */
+.tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.t-green{background:#dcfce7;color:#16a34a}
+.t-amber{background:#fef3c7;color:#d97706}
+.t-red{background:#fee2e2;color:#dc2626}
+.t-blue{background:#dbeafe;color:#1d4ed8}
+.t-gray{background:#f1f5f9;color:#64748b}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 9px;font-size:12px;color:#1e293b;background:#fff;width:100%;outline:none;font-family:inherit}
+.field input:focus,.field select:focus{border-color:#1453B8}
+.field input[readonly]{background:#f8fafc;color:#94a3b8}
+.fgrid{display:grid;gap:10px}
+.fc2{grid-template-columns:1fr 1fr}
+.fc3{grid-template-columns:1fr 1fr 1fr}
+.fc4{grid-template-columns:1fr 1fr 1fr 1fr}
+@media(max-width:700px){.fc3,.fc4{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.fc2,.fc3,.fc4{grid-template-columns:1fr}}
+
+/* LINE ITEM INPUTS */
+.li{border:1.5px solid #e2e8f0;border-radius:5px;padding:3px 5px;font-size:11px;color:#1e293b;background:#fff;outline:none;font-family:inherit}
+.li:focus{border-color:#1453B8}
+.li.r{text-align:right}
+.w8{width:34px}.w11{width:44px}.w14{width:56px}.w18{width:72px}.w22{width:88px}.w28{width:112px}.w36{width:144px}.w46{width:184px}
+
+/* COMPUTED CELLS */
+.cc{white-space:nowrap;font-size:11px;font-weight:600}
+.cc-g{color:#16a34a;font-weight:700}
+.cc-r{color:#dc2626;font-weight:700}
+.cc-b{color:#1453B8;font-weight:700}
+.cc-a{color:#d97706;font-weight:700}
+.cc-d{color:#0f172a;font-weight:800}
+
+/* GP PILL */
+.gp-pill{display:inline-block;padding:2px 6px;border-radius:5px;font-size:10px;font-weight:800}
+.gp-hi{background:#dcfce7;color:#16a34a}
+.gp-mi{background:#fef3c7;color:#d97706}
+.gp-lo{background:#fee2e2;color:#dc2626}
+
+/* APPROVAL */
+.apv{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block}
+.apv-g{background:#dcfce7;color:#16a34a}
+.apv-a{background:#fef3c7;color:#d97706}
+.apv-r{background:#fee2e2;color:#dc2626}
+
+/* SUMMARY */
+.srow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f8fafc;font-size:12px}
+.srow .sl{color:#64748b}
+.srow .sv{font-weight:700;color:#0f172a}
+.srow.stot{border-top:2px solid #e2e8f0;margin-top:3px;padding-top:8px}
+.srow.stot .sl{font-weight:800;color:#0f172a;font-size:13px}
+.srow.stot .sv{font-size:14px;color:#1453B8}
+
+/* GRAND BOX */
+.gbox{border-radius:12px;padding:18px;color:#fff;background:linear-gradient(135deg,#1453B8,#0E3E8C);margin-bottom:14px}
+.gbox-l{font-size:9px;color:rgba(255,255,255,.7);margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.gbox-v{font-size:22px;font-weight:900;line-height:1.2}
+.gbox-s{font-size:11px;color:rgba(255,255,255,.65);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15);line-height:1.7}
+
+/* SEARCH */
+.search{width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 12px;font-size:12px;color:#1e293b;background:#fff;outline:none;margin-bottom:12px}
+.search:focus{border-color:#1453B8}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filter-row select{border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 9px;font-size:12px;background:#fff;color:#1e293b;outline:none;cursor:pointer}
+.filter-count{margin-left:auto;font-size:11px;color:#94a3b8;font-weight:600}
+
+/* BACK ROW */
+.brow{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.back-btn{background:#fff;border:1.5px solid #e2e8f0;cursor:pointer;font-size:14px;color:#64748b;padding:4px 10px;border-radius:7px;font-weight:700}
+.back-btn:hover{background:#f1f5f9}
+
+/* INFO BOX */
+.ibox{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:9px 13px;font-size:11px;color:#1e40af;margin-bottom:12px;line-height:1.6}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+@media(max-width:650px){.two-col{grid-template-columns:1fr}}
+.empty{padding:40px;text-align:center;color:#94a3b8;font-size:13px}
+
+/* TOAST */
+#toast{position:fixed;bottom:18px;right:18px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25);display:none;max-width:300px}
+#toast.err{background:#dc2626}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-logo">
+    <div class="nav-icon">BGS</div>
+    Cost Sheet Pro
+  </div>
+  <button class="nav-btn on" onclick="showPage('cs',this)">📄 Cost Sheets</button>
+  <button class="nav-btn" onclick="showPage('boq',this)">📋 BOQ</button>
+  <button class="nav-btn" onclick="showPage('ca',this)">🏆 Closed Accounts</button>
+  <div class="nav-right">
+    <div class="av">MK</div>
+  </div>
+</div>
+
+<!-- PAGES -->
+<div class="page active" id="pg-cs"></div>
+<div class="page" id="pg-boq"></div>
+<div class="page" id="pg-ca"></div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function $(id){ return document.getElementById(id); }
+function N(v){ return parseFloat(v)||0; }
+function money(n){
+  n=N(n);
+  return 'AED '+n.toLocaleString('en-AE',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function P(n){ return N(n).toFixed(1); }
+function uid(){ return Math.random().toString(36).slice(2)+Date.now().toString(36); }
+function esc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function val(id){ var e=$(id); return e?e.value:''; }
+function nval(id){ return N(val(id)); }
+function setHTML(id,h){ var e=$(id); if(e) e.innerHTML=h; }
+
+var toastT;
+function toast(msg,err){
+  var t=$('toast');
+  t.textContent=msg;
+  t.className=err?'err':'';
+  t.style.display='block';
+  clearTimeout(toastT);
+  toastT=setTimeout(function(){t.style.display='none';},3000);
+}
+
+/* ════════════════════════════════════════
+   PAGE ROUTING
+════════════════════════════════════════ */
+function showPage(p,btn){
+  document.querySelectorAll('.page').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('on');});
+  $('pg-'+p).classList.add('active');
+  if(btn) btn.classList.add('on');
+  if(p==='cs') renderCSList();
+  if(p==='boq') renderBOQList();
+  if(p==='ca') renderCAList();
+}
+
+/* ════════════════════════════════════════
+   STORAGE  (localStorage — persists across
+   sessions in the same browser)
+════════════════════════════════════════ */
+function save(key,data){ localStorage.setItem(key,JSON.stringify(data)); }
+function load(key){ try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){ return []; } }
+
+var csDB  = load('bgs_cs');
+var caDB  = load('bgs_ca');
+var boqDB = load('bgs_boq');
+
+function saveCS(){  save('bgs_cs',  csDB);  }
+function saveCA(){  save('bgs_ca',  caDB);  }
+function saveBOQ(){ save('bgs_boq', boqDB); }
+
+/* ════════════════════════════════════════
+   CALCULATION
+   - Freight = % of Unit Cost
+   - GP = Total Selling (excl VAT) − Total Landed
+   - GP% = GP ÷ Total Selling × 100
+════════════════════════════════════════ */
+function calcRow(r,vp){
+  vp = N(vp)||5;
+  var qty = N(r.qty);
+  var uc  = N(r.unitCost);
+  var fp  = N(r.freightPct);
+  var cu  = N(r.customs);
+  var cl  = N(r.clearing);
+  var ins = N(r.install);
+  var cfg = N(r.config);
+  var war = N(r.warranty);
+  var oth = N(r.other);
+  var sp  = N(r.sellingPrice);
+  var dis = N(r.disc);
+
+  var freightAmt  = uc * (fp / 100);
+  var landedUnit  = uc + freightAmt + cu + cl + ins + cfg + war + oth;
+  var totalLanded = landedUnit * qty;
+  var finalSP     = sp * (1 - dis / 100);
+  var totalSP     = finalSP * qty;
+  var lineVAT     = totalSP * (vp / 100);
+  var lineTotal   = totalSP + lineVAT;
+  var gp          = totalSP - totalLanded;
+  var gpPct       = totalSP > 0 ? (gp / totalSP) * 100 : 0;
+
+  return {freightAmt:freightAmt, landedUnit:landedUnit, totalLanded:totalLanded,
+          finalSP:finalSP, totalSP:totalSP, lineVAT:lineVAT, lineTotal:lineTotal,
+          gp:gp, gpPct:gpPct};
+}
+
+function calcSummary(rows, vp){
+  var tL=0, tSP=0, tV=0;
+  var comp = rows.map(function(r){
+    var c = calcRow(r, vp);
+    tL  += c.totalLanded;
+    tSP += c.totalSP;
+    tV  += c.lineVAT;
+    return Object.assign({},r,c);
+  });
+  var tG   = tSP - tL;
+  var gpP  = tSP > 0 ? (tG / tSP) * 100 : 0;
+  var grand= tSP + tV;
+  return {comp:comp, tL:tL, tSP:tSP, tG:tG, gpP:gpP, tV:tV, grand:grand};
+}
+
+function gpPill(g){
+  var cls = g>=25?'gp-hi':g>=15?'gp-mi':'gp-lo';
+  return '<span class="gp-pill '+cls+'">'+P(g)+'%</span>';
+}
+function apvBadge(g){
+  if(g>=25) return '<span class="apv apv-g">✓ Auto-Approved (GP ≥ 25%)</span>';
+  if(g>=15) return '<span class="apv apv-a">⚑ Manager Approval (GP 15–25%)</span>';
+  return '<span class="apv apv-r">⚠ Director Approval (GP &lt; 15%)</span>';
+}
+function statusTag(s){
+  var m={Approved:'t-green',Pending:'t-amber',Rejected:'t-red',Draft:'t-gray',Submitted:'t-blue',Won:'t-green',Lost:'t-red',Paid:'t-green',Invoiced:'t-blue'};
+  return '<span class="tag '+(m[s]||'t-gray')+'">'+esc(s)+'</span>';
+}
+function fld(l,inp){ return '<div class="field"><label>'+l+'</label>'+inp+'</div>'; }
+function srow(l,v,st){ return '<div class="srow"><span class="sl">'+l+'</span><span class="sv"'+(st?' style="'+st+'"':'')+'>'+v+'</span></div>'; }
+
+/* ════════════════════════════════════════
+   COST SHEET MODULE
+════════════════════════════════════════ */
+var CATS=['Barcode & Scanning','RFID','Mobile Computers','Networking','Storage & Servers','AV Solutions','Cybersecurity','Software','Printing & Cards','Services','Other'];
+var csView='list', csEdit=null, csRows=[], csMeta={};
+
+function blankCSRow(){
+  return {id:uid(),cat:CATS[0],brand:'',model:'',desc:'',qty:1,unitCost:0,freightPct:0,customs:0,clearing:0,install:0,config:0,warranty:0,other:0,sellingPrice:0,disc:0};
+}
+
+/* LIST */
+function renderCSList(){
+  var q  = $('cs-q')  ? $('cs-q').value  : '';
+  var fs = $('cs-fs') ? $('cs-fs').value : 'All';
+  var rows = csDB.filter(function(s){
+    var hit=[s.id,s.customer||'',s.person||'',s.project||'',s.rfq||''].join(' ').toLowerCase().indexOf(q.toLowerCase())>=0;
+    return hit && (fs==='All'||s.status===fs);
+  });
+  var tA=csDB.filter(function(s){return s.status==='Approved';}).length;
+  var tP=csDB.filter(function(s){return s.status==='Pending';}).length;
+  var tV=csDB.reduce(function(s,c){return s+N(c.grand);},0);
+
+  var h='';
+  h+='<div class="ph"><div><div class="ph-title">📄 Cost Sheets</div><div class="ph-sub">'+csDB.length+' total records</div></div>';
+  h+='<button class="btn btn-p" onclick="openNewCS()">＋ New Cost Sheet</button></div>';
+  h+='<div class="krow">';
+  h+=kpi('Total',csDB.length,'','');
+  h+=kpi('Approved',tA,'Auto-approved','kg');
+  h+=kpi('Pending',tP,'Needs action','ka');
+  h+=kpi('Grand Total',tV===0?'—':money(tV).replace('AED ',''),'','kb');
+  h+='</div>';
+  h+='<input id="cs-q" class="search" placeholder="🔍  Search by CS#, customer, project, RFQ..." value="'+esc(q)+'" oninput="renderCSList()">';
+  h+='<div class="filter-row">';
+  h+='<select id="cs-fs" onchange="renderCSList()"><option value="All">All Status</option>';
+  h+='<option'+(fs==='Approved'?' selected':'')+'>Approved</option>';
+  h+='<option'+(fs==='Pending'?' selected':'')+'>Pending</option>';
+  h+='<option'+(fs==='Rejected'?' selected':'')+'>Rejected</option>';
+  h+='</select><span class="filter-count">'+rows.length+' records</span></div>';
+
+  h+='<div class="card"><div class="tbl-wrap"><table>';
+  h+='<thead><tr><th>CS #</th><th>Date</th><th>Customer</th><th>Sales Person</th><th>Project</th><th>RFQ</th><th>Total Landed</th><th>Total Selling<br>excl VAT</th><th>VAT</th><th>Grand Total<br>incl VAT</th><th>GP</th><th>GP %</th><th>Status</th><th></th></tr></thead><tbody>';
+
+  if(rows.length===0){
+    h+='<tr><td colspan="14"><div class="empty">No cost sheets yet — click "+ New Cost Sheet"</div></td></tr>';
+  }
+  rows.forEach(function(s){
+    h+='<tr class="row-cl" onclick="editCS(\''+s.id+'\')">';
+    h+='<td style="color:#1453B8;font-weight:800">'+esc(s.id)+'</td>';
+    h+='<td style="color:#64748b">'+esc(s.date||'')+'</td>';
+    h+='<td style="font-weight:700">'+esc(s.customer||'')+'</td>';
+    h+='<td style="color:#64748b">'+esc(s.person||'')+'</td>';
+    h+='<td style="color:#475569">'+esc(s.project||'')+'</td>';
+    h+='<td style="color:#94a3b8;font-size:11px">'+esc(s.rfq||'—')+'</td>';
+    h+='<td class="cc">'+money(s.tL||0)+'</td>';
+    h+='<td class="cc">'+money(s.tSP||0)+'</td>';
+    h+='<td class="cc cc-a">'+money(s.tV||0)+'</td>';
+    h+='<td class="cc cc-d">'+money(s.grand||0)+'</td>';
+    h+='<td class="cc '+(N(s.tG)>=0?'cc-g':'cc-r')+'">'+money(s.tG||0)+'</td>';
+    h+='<td>'+gpPill(s.gpP||0)+'</td>';
+    h+='<td>'+statusTag(s.status)+'</td>';
+    h+='<td onclick="event.stopPropagation()"><button class="btn-d" onclick="deleteCS(\''+s.id+'\')">🗑</button></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+  setHTML('pg-cs',h);
+}
+
+function kpi(l,v,s,c){
+  return '<div class="kpi"><div class="kpi-l">'+l+'</div><div class="kpi-v">'+esc(String(v))+'</div>'+(s?'<div class="kpi-s '+(c||'')+'">'+esc(s)+'</div>':'')+'</div>';
+}
+
+function openNewCS(){
+  csEdit=null;
+  csMeta={id:'CS-'+Date.now().toString().slice(-6),date:new Date().toISOString().slice(0,10),person:'',customer:'',contact:'',project:'',rfq:'',vendor:'',currency:'AED',exRate:1,vatPct:5,notes:''};
+  csRows=[blankCSRow()];
+  renderCSForm();
+}
+
+function editCS(id){
+  var s=csDB.find(function(x){return x.id===id;});
+  if(!s) return;
+  csEdit=id;
+  csMeta={id:s.id,date:s.date,person:s.person||'',customer:s.customer||'',contact:s.contact||'',project:s.project||'',rfq:s.rfq||'',vendor:s.vendor||'',currency:s.currency||'AED',exRate:s.exRate||1,vatPct:s.vatPct||5,notes:s.notes||''};
+  csRows=(s.rows&&s.rows.length)?s.rows.map(function(r){return Object.assign({},r);}):[blankCSRow()];
+  renderCSForm();
+}
+
+function deleteCS(id){
+  if(!confirm('Delete this cost sheet?')) return;
+  csDB=csDB.filter(function(s){return s.id!==id;});
+  saveCS(); renderCSList(); toast('🗑 Deleted');
+}
+
+/* FORM */
+function renderCSForm(){
+  csView='form';
+  var vp=N(csMeta.vatPct)||5;
+  var sum=calcSummary(csRows,vp);
+
+  var h='';
+  h+='<div class="brow"><button class="back-btn" onclick="backCS()">‹ Back</button>';
+  h+='<div><div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:3px">'+esc(csMeta.id)+'</div>'+apvBadge(sum.gpP)+'</div>';
+  h+='<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">';
+  h+='<button class="btn btn-s" onclick="window.print()">🖨 Print</button>';
+  h+='<button class="btn btn-p" onclick="doSaveCS()">💾 Save</button>';
+  h+='</div></div>';
+
+  /* meta */
+  h+='<div class="card"><div class="card-body">';
+  h+='<div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Cost Sheet Details</div>';
+  h+='<div class="fgrid fc4">';
+  h+=fld('CS Number','<input id="f_id" value="'+esc(csMeta.id)+'" readonly>');
+  h+=fld('Date','<input id="f_date" type="date" value="'+esc(csMeta.date)+'">');
+  h+=fld('Sales Person','<input id="f_person" value="'+esc(csMeta.person)+'" placeholder="Name">');
+  h+=fld('Customer Name','<input id="f_cust" value="'+esc(csMeta.customer)+'" placeholder="Company">');
+  h+=fld('Customer Contact','<input id="f_contact" value="'+esc(csMeta.contact)+'" placeholder="Name / phone / email">');
+  h+=fld('Project Name','<input id="f_proj" value="'+esc(csMeta.project)+'">');
+  h+=fld('RFQ Number','<input id="f_rfq" value="'+esc(csMeta.rfq)+'">');
+  h+=fld('Vendor / Supplier','<input id="f_vendor" value="'+esc(csMeta.vendor)+'">');
+  h+=fld('Currency','<select id="f_cur"><option'+(csMeta.currency==='AED'?' selected':'')+'>AED</option><option'+(csMeta.currency==='USD'?' selected':'')+'>USD</option><option'+(csMeta.currency==='EUR'?' selected':'')+'>EUR</option></select>');
+  h+=fld('Exchange Rate → AED','<input id="f_exr" type="number" step="0.0001" value="'+esc(csMeta.exRate)+'">');
+  h+=fld('VAT %','<input id="f_vat" type="number" step="0.1" value="'+esc(csMeta.vatPct)+'" onchange="csMeta.vatPct=parseFloat(this.value)||5;renderCSForm()">');
+  h+=fld('Notes','<input id="f_notes" value="'+esc(csMeta.notes)+'" placeholder="Internal notes">');
+  h+='</div></div></div>';
+
+  h+='<div class="ibox">💡 <b>Freight %</b> = % of Unit Cost &nbsp;·&nbsp; <b>GP</b> = Total Selling (excl VAT) − Total Landed &nbsp;·&nbsp; <b>GP%</b> = GP ÷ Total Selling × 100</div>';
+
+  /* line items */
+  h+='<div class="card"><div class="card-head"><div class="card-title">Line Items</div><button class="btn btn-s" style="font-size:11px;padding:4px 10px" onclick="addCSRow()">＋ Add Row</button></div>';
+  h+='<div class="tbl-wrap"><table><thead><tr>';
+  ['#','Category','Brand','Model','Description','Qty',
+   'Unit Cost','Freight %','Freight Amt','Customs','Clearing','Install','Config','Warranty','Other',
+   'Landed/Unit','Total Landed','Sell Price','Disc %','Final SP','Total SP excl VAT',
+   'VAT '+vp+'%','Line Total incl VAT','GP','GP %',''].forEach(function(h2){
+    document.write; // noop just for loop
+    h+='<th>'+h2+'</th>';
+  });
+  h+='</tr></thead><tbody>';
+
+  sum.comp.forEach(function(r,i){
+    var co=CATS.map(function(c){return '<option'+(c===r.cat?' selected':'')+'>'+esc(c)+'</option>';}).join('');
+    h+='<tr>';
+    h+='<td style="color:#94a3b8;font-size:10px">'+(i+1)+'</td>';
+    h+='<td><select class="li w28" onchange="csRS(\''+r.id+'\',\'cat\',this.value)">'+co+'</select></td>';
+    h+='<td><input class="li w18" value="'+esc(r.brand)+'" placeholder="Zebra" onchange="csRS(\''+r.id+'\',\'brand\',this.value)"></td>';
+    h+='<td><input class="li w22" value="'+esc(r.model)+'" placeholder="ZD621" onchange="csRS(\''+r.id+'\',\'model\',this.value)"></td>';
+    h+='<td><input class="li w46" value="'+esc(r.desc)+'" placeholder="Description" onchange="csRS(\''+r.id+'\',\'desc\',this.value)"></td>';
+    h+='<td><input class="li r w8" type="number" min="0" value="'+r.qty+'" onchange="csRN(\''+r.id+'\',\'qty\',this.value)"></td>';
+    h+='<td><input class="li r w14" type="number" min="0" value="'+r.unitCost+'" onchange="csRN(\''+r.id+'\',\'unitCost\',this.value)"></td>';
+    h+='<td><input class="li r w11" type="number" min="0" max="100" step="0.1" value="'+r.freightPct+'" onchange="csRN(\''+r.id+'\',\'freightPct\',this.value)" title="% of Unit Cost"></td>';
+    h+='<td class="cc cc-a">'+money(r.freightAmt)+'</td>';
+    h+='<td><input class="li r w11" type="number" min="0" value="'+r.customs+'" onchange="csRN(\''+r.id+'\',\'customs\',this.value)"></td>';
+    h+='<td><input class="li r w11" type="number" min="0" value="'+r.clearing+'" onchange="csRN(\''+r.id+'\',\'clearing\',this.value)"></td>';
+    h+='<td><input class="li r w11" type="number" min="0" value="'+r.install+'" onchange="csRN(\''+r.id+'\',\'install\',this.value)"></td>';
+    h+='<td><input class="li r w11" type="number" min="0" value="'+r.config+'" onchange="csRN(\''+r.id+'\',\'config\',this.value)"></td>';
+    h+='<td><input class="li r w11" type="number" min="0" value="'+r.warranty+'" onchange="csRN(\''+r.id+'\',\'warranty\',this.value)"></td>';
+    h+='<td><input class="li r w11" type="number" min="0" value="'+r.other+'" onchange="csRN(\''+r.id+'\',\'other\',this.value)"></td>';
+    h+='<td class="cc">'+money(r.landedUnit)+'</td>';
+    h+='<td class="cc cc-d">'+money(r.totalLanded)+'</td>';
+    h+='<td><input class="li r w18" type="number" min="0" value="'+r.sellingPrice+'" onchange="csRN(\''+r.id+'\',\'sellingPrice\',this.value)"></td>';
+    h+='<td><input class="li r w8" type="number" min="0" max="100" value="'+r.disc+'" onchange="csRN(\''+r.id+'\',\'disc\',this.value)"></td>';
+    h+='<td class="cc">'+money(r.finalSP)+'</td>';
+    h+='<td class="cc cc-b">'+money(r.totalSP)+'</td>';
+    h+='<td class="cc cc-a">'+money(r.lineVAT)+'</td>';
+    h+='<td class="cc cc-d">'+money(r.lineTotal)+'</td>';
+    h+='<td class="cc '+(r.gp>=0?'cc-g':'cc-r')+'">'+money(r.gp)+'</td>';
+    h+='+<td>'+gpPill(r.gpPct)+'</td>';
+    h+='<td><button onclick="delCSRow(\''+r.id+'\')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:16px">✕</button></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+
+  /* summary */
+  h+='<div class="two-col">';
+  h+='<div class="card"><div class="card-body">';
+  h+='<div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Financial Summary</div>';
+  h+=srow('Total Landed Cost',money(sum.tL));
+  h+=srow('Total Selling Price (excl. VAT)',money(sum.tSP));
+  h+=srow('Gross Profit',money(sum.tG),sum.tG>=0?'color:#16a34a':'color:#dc2626');
+  h+=srow('GP %',P(sum.gpP)+'%',sum.gpP>=25?'color:#16a34a':sum.gpP>=15?'color:#d97706':'color:#dc2626');
+  h+=srow('Total VAT ('+vp+'%)',money(sum.tV),'color:#d97706');
+  h+='<div class="srow stot"><span class="sl">Grand Total (incl. VAT)</span><span class="sv">'+money(sum.grand)+'</span></div>';
+  h+='</div></div>';
+  h+='<div class="gbox"><div class="gbox-l">Grand Total (incl. VAT)</div>';
+  h+='<div class="gbox-v">'+money(sum.grand)+'</div>';
+  h+='<div class="gbox-s">';
+  h+='Selling excl. VAT: '+money(sum.tSP)+'<br>';
+  h+='VAT ('+vp+'%): '+money(sum.tV)+'<br>';
+  h+='Landed Cost: '+money(sum.tL)+'<br>';
+  h+='GP: '+money(sum.tG)+' ('+P(sum.gpP)+'%)<br>';
+  h+=apvBadge(sum.gpP);
+  h+='</div></div></div>';
+
+  setHTML('pg-cs',h);
+}
+
+function csRS(id,k,v){ csRows=csRows.map(function(r){return r.id===id?Object.assign({},r,{[k]:v}):r;}); renderCSForm(); }
+function csRN(id,k,v){ csRows=csRows.map(function(r){return r.id===id?Object.assign({},r,{[k]:N(v)}):r;}); renderCSForm(); }
+function addCSRow(){ csRows.push(blankCSRow()); renderCSForm(); }
+function delCSRow(id){ csRows=csRows.filter(function(r){return r.id!==id;}); if(!csRows.length) csRows=[blankCSRow()]; renderCSForm(); }
+function backCS(){ csView='list'; renderCSList(); }
+
+function doSaveCS(){
+  var vp=nval('f_vat')||5;
+  csMeta={id:val('f_id'),date:val('f_date'),person:val('f_person'),customer:val('f_cust'),contact:val('f_contact'),project:val('f_proj'),rfq:val('f_rfq'),vendor:val('f_vendor'),currency:val('f_cur'),exRate:nval('f_exr'),vatPct:vp,notes:val('f_notes')};
+  var sum=calcSummary(csRows,vp);
+  var entry=Object.assign({},csMeta,{rows:csRows,tL:sum.tL,tSP:sum.tSP,tG:sum.tG,gpP:sum.gpP,tV:sum.tV,grand:sum.grand,status:sum.gpP>=25?'Approved':'Pending'});
+  if(csEdit){ csDB=csDB.map(function(s){return s.id===csEdit?entry:s;}); }
+  else { csDB.unshift(entry); }
+  saveCS(); toast('✅ Cost sheet saved!'); backCS();
+}
+
+/* ════════════════════════════════════════
+   CLOSED ACCOUNTS MODULE
+════════════════════════════════════════ */
+var caView='list', caEdit=null, caForm={};
+
+function renderCAList(){
+  var q  = $('ca-q')  ? $('ca-q').value  : '';
+  var fo = $('ca-fo') ? $('ca-fo').value : 'All';
+  var fp = $('ca-fp') ? $('ca-fp').value : 'All';
+  var rows=caDB.filter(function(a){
+    var hit=[a.id,a.csRef||'',a.customer||'',a.person||'',a.project||'',a.poNo||''].join(' ').toLowerCase().indexOf(q.toLowerCase())>=0;
+    return hit&&(fo==='All'||a.outcome===fo)&&(fp==='All'||a.payment===fp);
+  });
+  var won=caDB.filter(function(a){return a.outcome==='Won';});
+  var lost=caDB.filter(function(a){return a.outcome==='Lost';});
+  var tW=won.reduce(function(s,a){return s+N(a.value);},0);
+  var tP=won.filter(function(a){return a.payment==='Pending';}).reduce(function(s,a){return s+N(a.value);},0);
+  var wr=caDB.length?(won.length/caDB.length)*100:0;
+  var ag=won.length?won.reduce(function(s,a){return s+N(a.gp);},0)/won.length:0;
+
+  var h='<div class="ph"><div><div class="ph-title">🏆 Closed Accounts</div><div class="ph-sub">Track won/lost deals, PO numbers &amp; payment status</div></div>';
+  h+='<button class="btn btn-p" onclick="openNewCA()">＋ Log Closed Account</button></div>';
+  h+='<div class="krow">';
+  h+=kpi('Total Closed Won',tW===0?'—':money(tW).replace('AED ',''),won.length+' deals','kg');
+  h+=kpi('Win Rate',P(wr)+'%',lost.length+' lost',wr>=50?'kg':'ka');
+  h+=kpi('Avg GP (Won)',P(ag)+'%','','kb');
+  h+=kpi('Pending Payment',tP===0?'—':money(tP).replace('AED ',''),'Follow up','ka');
+  h+=kpi('Total',caDB.length,'','');
+  h+='</div>';
+  h+='<input id="ca-q" class="search" placeholder="🔍  Search accounts, customer, PO, CS ref..." value="'+esc(q)+'" oninput="renderCAList()">';
+  h+='<div class="filter-row">';
+  h+='<select id="ca-fo" onchange="renderCAList()"><option value="All">All Outcomes</option><option'+(fo==='Won'?' selected':'')+'>Won</option><option'+(fo==='Lost'?' selected':'')+'>Lost</option></select>';
+  h+='<select id="ca-fp" onchange="renderCAList()"><option value="All">All Payments</option><option'+(fp==='Paid'?' selected':'')+'>Paid</option><option'+(fp==='Invoiced'?' selected':'')+'>Invoiced</option><option'+(fp==='Pending'?' selected':'')+'>Pending</option></select>';
+  h+='<span class="filter-count">'+rows.length+' records</span></div>';
+  h+='<div class="card"><div class="tbl-wrap"><table>';
+  h+='<thead><tr><th>ID</th><th>CS Ref</th><th>Close Date</th><th>Customer</th><th>Sales Person</th><th>Project</th><th>Deal Value</th><th>GP %</th><th>PO Number</th><th>Outcome</th><th>Payment</th><th>Actions</th></tr></thead><tbody>';
+  if(rows.length===0) h+='<tr><td colspan="12"><div class="empty">No closed accounts yet — click "+ Log Closed Account"</div></td></tr>';
+  rows.forEach(function(a){
+    h+='<tr>';
+    h+='<td style="color:#1453B8;font-weight:800">'+esc(a.id)+'</td>';
+    h+='<td style="color:#64748b;font-size:11px">'+esc(a.csRef||'—')+'</td>';
+    h+='<td style="color:#64748b;white-space:nowrap">'+esc(a.closeDate||'')+'</td>';
+    h+='<td style="font-weight:700">'+esc(a.customer||'')+'</td>';
+    h+='<td style="color:#64748b">'+esc(a.person||'')+'</td>';
+    h+='<td style="color:#475569">'+esc(a.project||'')+'</td>';
+    h+='<td style="font-weight:700">'+money(a.value)+'</td>';
+    h+='+<td>'+gpPill(a.gp)+'</td>';
+    h+='<td style="font-family:monospace;font-size:11px;color:#64748b">'+esc(a.poNo||'—')+'</td>';
+    h+='<td>'+statusTag(a.outcome)+'</td>';
+    h+='<td>'+(a.payment&&a.payment!=='-'?statusTag(a.payment):'<span style="color:#cbd5e1">—</span>')+'</td>';
+    h+='<td><div style="display:flex;gap:5px;flex-wrap:wrap">';
+    h+='<button class="btn btn-g" style="font-size:11px;padding:3px 8px" onclick="editCA(\''+a.id+'\')">Edit</button>';
+    if(a.outcome==='Won'&&a.payment==='Pending') h+='<button class="btn btn-s" style="font-size:11px;padding:3px 8px" onclick="caSetPay(\''+a.id+'\',\'Invoiced\')">Invoice</button>';
+    if(a.outcome==='Won'&&a.payment==='Invoiced') h+='<button class="btn-ok" onclick="caSetPay(\''+a.id+'\',\'Paid\')">✓ Paid</button>';
+    h+='<button class="btn-d" onclick="deleteCA(\''+a.id+'\')">🗑</button>';
+    h+='</div></td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+  setHTML('pg-ca',h);
+}
+
+function openNewCA(){
+  caEdit=null;
+  caForm={id:'CA-'+Date.now().toString().slice(-5),csRef:'',closeDate:new Date().toISOString().slice(0,10),customer:'',person:'',project:'',value:0,gp:0,outcome:'Won',payment:'Pending',poNo:'',notes:''};
+  renderCAForm();
+}
+function editCA(id){
+  var a=caDB.find(function(x){return x.id===id;}); if(!a) return;
+  caEdit=id; caForm=Object.assign({},a); renderCAForm();
+}
+function caSetPay(id,s){
+  caDB=caDB.map(function(a){return a.id===id?Object.assign({},a,{payment:s}):a;});
+  saveCA(); renderCAList(); toast('Payment updated');
+}
+function deleteCA(id){
+  if(!confirm('Delete this account?')) return;
+  caDB=caDB.filter(function(a){return a.id!==id;});
+  saveCA(); renderCAList(); toast('🗑 Deleted');
+}
+
+function renderCAForm(){
+  var d=caForm;
+  var h='<div class="brow"><button class="back-btn" onclick="backCA()">‹ Back</button>';
+  h+='<div style="font-size:15px;font-weight:800;color:#0f172a">'+esc(d.id)+'</div>';
+  h+='<div style="margin-left:auto"><button class="btn btn-p" onclick="doSaveCA()">💾 Save Account</button></div></div>';
+  h+='<div class="card"><div class="card-body">';
+  h+='<div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Closed Account Details</div>';
+  h+='<div class="fgrid fc3">';
+  h+=fld('Account ID','<input id="ca_id" value="'+esc(d.id)+'" readonly>');
+  h+=fld('CS Reference','<input id="ca_csref" value="'+esc(d.csRef||'')+'" placeholder="CS-2026-001">');
+  h+=fld('Close Date','<input id="ca_date" type="date" value="'+esc(d.closeDate||'')+'">');
+  h+=fld('Customer','<input id="ca_cust" value="'+esc(d.customer||'')+'" placeholder="Company name">');
+  h+=fld('Sales Person','<input id="ca_person" value="'+esc(d.person||'')+'" placeholder="Name">');
+  h+=fld('Project','<input id="ca_proj" value="'+esc(d.project||'')+'">');
+  h+=fld('Deal Value (AED)','<input id="ca_val" type="number" min="0" value="'+N(d.value)+'">');
+  h+=fld('GP %','<input id="ca_gp" type="number" step="0.1" value="'+N(d.gp)+'">');
+  h+=fld('PO Number','<input id="ca_po" value="'+esc(d.poNo||'')+'" placeholder="PO-CUST-0001">');
+  h+=fld('Outcome','<select id="ca_out"><option'+(d.outcome==='Won'?' selected':'')+'>Won</option><option'+(d.outcome==='Lost'?' selected':'')+'>Lost</option></select>');
+  h+=fld('Payment Status','<select id="ca_pay"><option'+(d.payment==='Pending'?' selected':'')+'>Pending</option><option'+(d.payment==='Invoiced'?' selected':'')+'>Invoiced</option><option'+(d.payment==='Paid'?' selected':'')+'>Paid</option><option value="-"'+(d.payment==='-'?' selected':'')+'>N/A</option></select>');
+  h+=fld('Notes','<input id="ca_notes" value="'+esc(d.notes||'')+'">');
+  h+='</div></div></div>';
+  if(d.outcome==='Won'){
+    h+='<div class="gbox"><div class="gbox-l">Deal Value</div><div class="gbox-v">'+money(d.value||0)+'</div>';
+    h+='<div class="gbox-s">GP: '+P(d.gp||0)+'%  ·  Payment: '+esc(d.payment)+'</div></div>';
+  }
+  setHTML('pg-ca',h);
+}
+function backCA(){ renderCAList(); }
+function doSaveCA(){
+  var entry={id:val('ca_id'),csRef:val('ca_csref'),closeDate:val('ca_date'),customer:val('ca_cust'),person:val('ca_person'),project:val('ca_proj'),value:nval('ca_val'),gp:nval('ca_gp'),poNo:val('ca_po'),outcome:val('ca_out'),payment:val('ca_pay'),notes:val('ca_notes')};
+  if(caEdit){ caDB=caDB.map(function(a){return a.id===caEdit?entry:a;}); }
+  else { caDB.unshift(entry); }
+  saveCA(); toast('✅ Account saved!'); backCA();
+}
+
+/* ════════════════════════════════════════
+   BOQ MODULE
+════════════════════════════════════════ */
+var BUNITS=['EA','LOT','SET','MTR','HR','DAY','PCS','BOX','KG','M2'];
+var boqView='list', boqEdit=null, boqMeta={}, boqRows=[], boqStatus='Draft';
+
+function blankBOQRow(){ return {id:uid(),item:'',desc:'',spec:'',brand:'',model:'',unit:'EA',qty:1,rate:0,amount:0}; }
+
+function renderBOQList(){
+  var q=($('bq-q')?$('bq-q').value:'');
+  var rows=boqDB.filter(function(b){return [b.id,b.customer||'',b.person||'',b.project||''].join(' ').toLowerCase().indexOf(q.toLowerCase())>=0;});
+  var tG=boqDB.reduce(function(s,b){return s+N(b.grand);},0);
+
+  var h='<div class="ph"><div><div class="ph-title">📋 Bill of Quantities</div><div class="ph-sub">'+boqDB.length+' BOQs'+(tG>0?' — Total '+money(tG):'')+'</div></div>';
+  h+='<button class="btn btn-p" onclick="openNewBOQ()">＋ New BOQ</button></div>';
+  h+='<div class="krow">';
+  h+=kpi('Total BOQs',boqDB.length,'','');
+  h+=kpi('Draft',boqDB.filter(function(b){return b.status==='Draft';}).length,'In progress','ka');
+  h+=kpi('Submitted',boqDB.filter(function(b){return b.status==='Submitted';}).length,'Awaiting','kb');
+  h+=kpi('Approved',boqDB.filter(function(b){return b.status==='Approved';}).length,'','kg');
+  h+='</div>';
+  h+='<input id="bq-q" class="search" placeholder="🔍  Search BOQs by number, customer, project..." value="'+esc(q)+'" oninput="renderBOQList()">';
+  h+='<div class="card"><div class="tbl-wrap"><table>';
+  h+='<thead><tr><th>BOQ #</th><th>Date</th><th>Customer</th><th>Sales Person</th><th>Project</th><th>RFQ / Ref</th><th>Items</th><th>Subtotal</th><th>VAT (5%)</th><th>Grand Total</th><th>Status</th><th></th></tr></thead><tbody>';
+  if(rows.length===0) h+='<tr><td colspan="12"><div class="empty">No BOQs yet — click "+ New BOQ"</div></td></tr>';
+  rows.forEach(function(b){
+    h+='<tr class="row-cl" onclick="editBOQ(\''+b.id+'\')">';
+    h+='<td style="color:#1453B8;font-weight:800">'+esc(b.id)+'</td>';
+    h+='<td style="color:#64748b">'+esc(b.date||'')+'</td>';
+    h+='<td style="font-weight:700">'+esc(b.customer||'')+'</td>';
+    h+='<td style="color:#64748b">'+esc(b.person||'')+'</td>';
+    h+='<td style="color:#475569">'+esc(b.project||'')+'</td>';
+    h+='<td style="color:#94a3b8;font-size:11px">'+esc(b.ref||'—')+'</td>';
+    h+='<td style="text-align:center;color:#64748b">'+((b.rows||[]).length)+'</td>';
+    h+='<td>'+money(b.subtotal||0)+'</td>';
+    h+='<td style="color:#d97706">'+money(b.vat||0)+'</td>';
+    h+='<td style="font-weight:800">'+money(b.grand||0)+'</td>';
+    h+='<td>'+statusTag(b.status)+'</td>';
+    h+='<td onclick="event.stopPropagation()"><button class="btn-d" onclick="deleteBOQ(\''+b.id+'\')">🗑</button></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+  setHTML('pg-boq',h);
+}
+
+function openNewBOQ(){
+  boqEdit=null;
+  boqMeta={id:'BOQ-'+Date.now().toString().slice(-5),date:new Date().toISOString().slice(0,10),customer:'',person:'',project:'',ref:'',notes:''};
+  boqRows=[blankBOQRow()]; boqStatus='Draft'; renderBOQForm();
+}
+function editBOQ(id){
+  var b=boqDB.find(function(x){return x.id===id;}); if(!b) return;
+  boqEdit=id;
+  boqMeta={id:b.id,date:b.date,customer:b.customer||'',person:b.person||'',project:b.project||'',ref:b.ref||'',notes:b.notes||''};
+  boqRows=(b.rows&&b.rows.length)?b.rows.map(function(r){return Object.assign({},r);}):[blankBOQRow()];
+  boqStatus=b.status||'Draft'; renderBOQForm();
+}
+function deleteBOQ(id){
+  if(!confirm('Delete this BOQ?')) return;
+  boqDB=boqDB.filter(function(b){return b.id!==id;});
+  saveBOQ(); renderBOQList(); toast('🗑 Deleted');
+}
+
+function renderBOQForm(){
+  var sub=boqRows.reduce(function(s,r){return s+N(r.amount);},0), vat=sub*.05, grand=sub+vat;
+  var h='<div class="brow"><button class="back-btn" onclick="backBOQ()">‹ Back</button>';
+  h+='<div><div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:3px">'+esc(boqMeta.id)+'</div>'+statusTag(boqStatus)+'</div>';
+  h+='<div style="margin-left:auto;display:flex;gap:8px"><button class="btn btn-s" onclick="window.print()">🖨 Print</button>';
+  h+='<button class="btn btn-p" onclick="doSaveBOQ()">💾 Save BOQ</button></div></div>';
+  h+='<div class="card"><div class="card-body">';
+  h+='<div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">BOQ Details</div>';
+  h+='<div class="fgrid fc4">';
+  h+=fld('BOQ Number','<input id="b_id" value="'+esc(boqMeta.id)+'" readonly>');
+  h+=fld('Date','<input id="b_date" type="date" value="'+esc(boqMeta.date)+'">');
+  h+=fld('Customer','<input id="b_cust" value="'+esc(boqMeta.customer)+'" placeholder="Company name">');
+  h+=fld('Sales Person','<input id="b_person" value="'+esc(boqMeta.person)+'" placeholder="Name">');
+  h+=fld('Project Name','<input id="b_proj" value="'+esc(boqMeta.project)+'">');
+  h+=fld('RFQ / Tender Ref','<input id="b_ref" value="'+esc(boqMeta.ref||'')+'">');
+  h+=fld('Status','<select id="b_stat"><option'+(boqStatus==='Draft'?' selected':'')+'>Draft</option><option'+(boqStatus==='Submitted'?' selected':'')+'>Submitted</option><option'+(boqStatus==='Approved'?' selected':'')+'>Approved</option></select>');
+  h+=fld('Notes','<input id="b_notes" value="'+esc(boqMeta.notes||'')+'" placeholder="Internal notes">');
+  h+='</div></div></div>';
+  h+='<div class="card"><div class="card-head"><div class="card-title">Bill of Quantities</div><button class="btn btn-s" style="font-size:11px;padding:4px 10px" onclick="addBOQRow()">＋ Add Item</button></div>';
+  h+='<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Item No</th><th>Description</th><th>Specification</th><th>Brand</th><th>Model</th><th>Unit</th><th>Qty</th><th>Unit Rate (AED)</th><th>Amount (AED)</th><th></th></tr></thead><tbody>';
+  boqRows.forEach(function(r,i){
+    var uo=BUNITS.map(function(u){return '<option'+(u===r.unit?' selected':'')+'>'+u+'</option>';}).join('');
+    h+='<tr>';
+    h+='<td style="color:#94a3b8;font-size:10px">'+(i+1)+'</td>';
+    h+='<td><input class="li w11" value="'+esc(r.item)+'" placeholder="1.1" onchange="boqRS(\''+r.id+'\',\'item\',this.value)"></td>';
+    h+='<td><input class="li w46" value="'+esc(r.desc)+'" placeholder="Item description" onchange="boqRS(\''+r.id+'\',\'desc\',this.value)"></td>';
+    h+='<td><input class="li w36" value="'+esc(r.spec||'')+'" placeholder="Specs / part no." onchange="boqRS(\''+r.id+'\',\'spec\',this.value)"></td>';
+    h+='<td><input class="li w18" value="'+esc(r.brand||'')+'" placeholder="Brand" onchange="boqRS(\''+r.id+'\',\'brand\',this.value)"></td>';
+    h+='<td><input class="li w22" value="'+esc(r.model||'')+'" placeholder="Model" onchange="boqRS(\''+r.id+'\',\'model\',this.value)"></td>';
+    h+='<td><select class="li" style="width:54px" onchange="boqRS(\''+r.id+'\',\'unit\',this.value)">'+uo+'</select></td>';
+    h+='<td><input class="li r w8" type="number" min="0" value="'+r.qty+'" onchange="boqRC(\''+r.id+'\',\'qty\',this.value)"></td>';
+    h+='<td><input class="li r w18" type="number" min="0" value="'+r.rate+'" onchange="boqRC(\''+r.id+'\',\'rate\',this.value)"></td>';
+    h+='<td class="cc cc-b">'+money(r.amount||0)+'</td>';
+    h+='<td><button onclick="delBOQRow(\''+r.id+'\')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:16px">✕</button></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+  h+='<div class="two-col">';
+  h+='<div class="card"><div class="card-body">';
+  h+='<div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">BOQ Summary</div>';
+  h+=srow('Subtotal (excl. VAT)',money(sub));
+  h+=srow('VAT (5%)',money(vat),'color:#d97706');
+  h+='<div class="srow stot"><span class="sl">Grand Total (incl. VAT)</span><span class="sv">'+money(grand)+'</span></div>';
+  h+='</div></div>';
+  h+='<div class="gbox"><div class="gbox-l">Grand Total (incl. VAT)</div><div class="gbox-v">'+money(grand)+'</div>';
+  h+='<div class="gbox-s">'+boqRows.length+' line items  ·  VAT: '+money(vat)+'</div></div>';
+  h+='</div>';
+  setHTML('pg-boq',h);
+}
+function boqRS(id,k,v){ boqRows=boqRows.map(function(r){return r.id===id?Object.assign({},r,{[k]:v}):r;}); renderBOQForm(); }
+function boqRC(id,k,v){ boqRows=boqRows.map(function(r){if(r.id!==id)return r; var u=Object.assign({},r,{[k]:N(v)}); u.amount=N(u.qty)*N(u.rate); return u;}); renderBOQForm(); }
+function addBOQRow(){ boqRows.push(blankBOQRow()); renderBOQForm(); }
+function delBOQRow(id){ boqRows=boqRows.filter(function(r){return r.id!==id;}); if(!boqRows.length) boqRows=[blankBOQRow()]; renderBOQForm(); }
+function backBOQ(){ renderBOQList(); }
+function doSaveBOQ(){
+  var sub=boqRows.reduce(function(s,r){return s+N(r.amount);},0), vat=sub*.05, grand=sub+vat;
+  var m={id:val('b_id'),date:val('b_date'),customer:val('b_cust'),person:val('b_person'),project:val('b_proj'),ref:val('b_ref'),notes:val('b_notes'),status:val('b_stat')};
+  var entry=Object.assign({},m,{rows:boqRows,subtotal:sub,vat:vat,grand:grand});
+  if(boqEdit){ boqDB=boqDB.map(function(b){return b.id===boqEdit?entry:b;}); }
+  else { boqDB.unshift(entry); }
+  saveBOQ(); toast('✅ BOQ saved!'); backBOQ();
+}
+
+/* ════════════════════════════════════════
+   INIT — render first page immediately
+════════════════════════════════════════ */
+renderCSList();
+</script>
+</body>
+</html>
